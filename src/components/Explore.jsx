@@ -26,8 +26,6 @@ export default function Explore({ query, setQuery, setResolvedLocation }) {
         lastSearched.current = query // to prevent rerender on manual search submission, later by useeffect 
 
         setLoading(true);
-        setMasti(false); // Reset the warning on a new search
-
         const accessKey = import.meta.env.VITE_UNSPLASH_KEY;
         const geoapifyKey = import.meta.env.VITE_GEOAPIFY_KEY;
 
@@ -64,10 +62,10 @@ export default function Explore({ query, setQuery, setResolvedLocation }) {
             }
 
             // Pass the name AND the coordinates to the Planner!
-            setResolvedLocation({ 
-                name: resolvedLocation, 
-                lat: destLat, 
-                lon: destLon 
+            setResolvedLocation({
+                name: resolvedLocation,
+                lat: destLat,
+                lon: destLon
             });
             const response = await fetch(`https://api.unsplash.com/search/photos?page=1&query=${encodeURIComponent(resolvedLocation)}&client_id=${accessKey}&per_page=8`);
             const data = await response.json();
