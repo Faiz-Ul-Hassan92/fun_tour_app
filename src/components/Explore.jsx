@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useDebounce } from "react-use";
-export default function Explore({ query, setQuery }) {
+export default function Explore({ query, setQuery, setResolvedLocation }) {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -40,6 +40,8 @@ export default function Explore({ query, setQuery }) {
             }
 
             let resolvedLocation = query;
+            let destLat = null;
+            let destLon = null;
 
             const isValidPlace = geoData.features && geoData.features.some(feature => {
                 const type = feature.properties.result_type;
@@ -47,6 +49,8 @@ export default function Explore({ query, setQuery }) {
 
                 if (["city", "country", "state", "county", "island"].includes(type) || importance > 0.4) {
                     resolvedLocation = feature.properties.city || feature.properties.name || feature.properties.formatted || query;
+                    destLat = feature.properties.lat;
+                    destLon = feature.properties.lon;
                     return true;
                 }
                 return false;
@@ -58,6 +62,12 @@ export default function Explore({ query, setQuery }) {
                 return;
             }
 
+            // Pass the name AND the coordinates to the Planner!
+            setResolvedLocation({ 
+                name: resolvedLocation, 
+                lat: destLat, 
+                lon: destLon 
+            });
             const response = await fetch(`https://api.unsplash.com/search/photos?page=1&query=${encodeURIComponent(resolvedLocation)}&client_id=${accessKey}&per_page=8`);
             const data = await response.json();
             console.log(data)
