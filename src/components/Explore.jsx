@@ -1,17 +1,31 @@
-import { useState } from "react";
-
-export default function Explore() {
-    const [query, setQuery] = useState("");
+import { useEffect, useState, useRef } from "react";
+import { useDebounce } from "react-use";
+export default function Explore({ query, setQuery }) {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [masti, setMasti] = useState(false)
+    const [debouncedQuery, setDebouncedQuery] = useState("");
+
+    const lastSearched = useRef("")
+
+    useDebounce(() => {
+        setDebouncedQuery(query);
+    }, 800, [query]);
+
+
+    useEffect(() => {
+        if (debouncedQuery) {
+            handleSearch();
+        }
+    }, [debouncedQuery]);
 
     const handleSearch = async (e) => {
-        e.preventDefault();
-        if (!query) return;
+
+        if (e) e.preventDefault();
+        if (!query || query === lastSearched.current) return;
+
+        lastSearched.current = query // to prevent rerender on manual search submission, later by useeffect 
 
         setLoading(true);
-        setMasti(false); // Reset the warning on a new search
 
         const accessKey = "Zq04tzmwWRIX88auPRjYjjTk9i0QR63mhNjjzqELY6Q";
         const geoapifyKey = "b9e4d09de6b847b183515e8d9784c5e0";
@@ -39,7 +53,6 @@ export default function Explore() {
             });
 
             if (!isValidPlace) {
-                setMasti(true);
                 setImages([]);
                 setLoading(false);
                 return;
@@ -101,15 +114,12 @@ export default function Explore() {
                 ))}
             </div>
 
-            {masti ? (
-                <div>
-                    Its a tour&travel site man, stawp it
-                </div>
-            ) : (images.length === 0 && !loading && (
+
+            {images.length === 0 && !loading && (
                 <div className="text-center text-gray-400 py-10">
                     Find Your Next Vacation Spot
                 </div>
-            ))}
+            )}
 
         </section>
     );
