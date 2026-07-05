@@ -15,7 +15,7 @@ export default function App() {
     // Stealth Location Fetch!
     const fetchLocation = async () => {
       try {
-        const geoapifyKey = "b9e4d09de6b847b183515e8d9784c5e0";
+        const geoapifyKey = import.meta.env.VITE_GEOAPIFY_KEY;
         const response = await fetch(`https://api.geoapify.com/v1/ipinfo?apiKey=${geoapifyKey}`);
         const data = await response.json();
 

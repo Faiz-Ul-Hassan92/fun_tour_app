@@ -26,9 +26,10 @@ export default function Explore({ query, setQuery, setResolvedLocation }) {
         lastSearched.current = query // to prevent rerender on manual search submission, later by useeffect 
 
         setLoading(true);
+        setMasti(false); // Reset the warning on a new search
 
-        const accessKey = "Zq04tzmwWRIX88auPRjYjjTk9i0QR63mhNjjzqELY6Q";
-        const geoapifyKey = "b9e4d09de6b847b183515e8d9784c5e0";
+        const accessKey = import.meta.env.VITE_UNSPLASH_KEY;
+        const geoapifyKey = import.meta.env.VITE_GEOAPIFY_KEY;
 
         try {
             const geoResponse = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(query)}&apiKey=${geoapifyKey}`);
